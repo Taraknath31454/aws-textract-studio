@@ -1,69 +1,35 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Blocks, Box, Braces, Check, Cloud, Database, FileCheck2, FileSearch, FileText, FormInput, LayoutDashboard, LockKeyhole, ScanLine, ShieldCheck, Signature, Sparkles, Table2, UploadCloud, Workflow, Zap } from "lucide-react";
+import { Brand } from "@/components/ui/brand";
+
+const capabilities = [
+  { icon: FileText, title: "Text Detection", copy: "Printed and handwritten words with position and confidence." },
+  { icon: FormInput, title: "Forms", copy: "Key-value relationships preserved as structured fields." },
+  { icon: Table2, title: "Tables", copy: "Rows, columns, merged cells, and headers reconstructed." },
+  { icon: FileSearch, title: "Queries", copy: "Target precise answers with natural-language questions." },
+  { icon: Signature, title: "Signatures", copy: "Locate the presence of signatures for human review." },
+  { icon: LayoutDashboard, title: "Layout Analysis", copy: "Understand titles, paragraphs, lists, and reading order." },
+];
+const workflow = ["Upload", "Analyze", "Extract", "Review", "Export"];
 
 export default function Home() {
-  return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+  return <div className="landing">
+    <nav className="landing-nav"><Brand /><div className="landing-links"><a href="#product">Product</a><a href="#workflow">Workflow</a><a href="#capabilities">Capabilities</a><a href="#security">Security</a></div><div className="landing-auth-actions"><Link className="sign-in-link" href="/login">Sign In</Link><Link className="btn btn-primary" href="/signup">Create Account <ArrowRight size={16} /></Link></div></nav>
+    <main>
+      <section className="hero" id="product">
+        <div className="hero-grid" /><div className="hero-orb hero-orb-one" /><div className="hero-orb hero-orb-two" />
+        <div className="hero-copy reveal"><span className="powered-badge"><span className="aws-smile">aws</span> POWERED BY AMAZON TEXTRACT</span><h1>Turn documents into <span>structured intelligence.</span></h1><p>Upload documents, extract text and structured information, validate uncertain results, and transform files into machine-readable data.</p><div className="hero-actions"><Link className="btn btn-primary btn-lg" href="/upload">Start Processing <ArrowRight size={18} /></Link><a className="btn btn-secondary btn-lg" href="#workflow"><Workflow size={18} /> Explore Workflow</a></div><div className="hero-trust"><span><Check size={14} /> Browser-only demo</span><span><Check size={14} /> AWS integration ready</span><span><Check size={14} /> No credentials required</span></div></div>
+        <div className="hero-visual reveal delay-1" aria-label="Animated document processing preview">
+          <div className="preview-toolbar"><div><i /><i /><i /></div><span>invoice_1042.pdf</span><em>ANALYZING</em></div>
+          <div className="preview-body"><div className="mock-document"><div className="doc-logo"><span>ACME</span><small>SYSTEMS</small></div><b>INVOICE</b><div className="doc-meta"><i /><i /><i /></div><div className="doc-table"><i /><i /><i /><i /></div><div className="doc-total"><i /><strong>₹42,580.00</strong></div><span className="scan-beam" /><span className="trace-box trace-one" /><span className="trace-box trace-two" /></div><div className="preview-results"><div className="results-head"><Sparkles size={14} /> Extracted fields <span>7</span></div>{[["Invoice no.","INV-2026-1042","98.7"],["Date","02 Sep 2026","97.9"],["Vendor","Acme Systems","96.4"],["Total","₹42,580.00","99.1"]].map(([key,value,score]) => <div className="preview-field" key={key}><span>{key}</span><strong>{value}</strong><em>{score}%</em></div>)}<div className="processing-line"><span /><small>Mapping source geometry…</small></div></div></div>
+          <div className="floating-chip chip-one"><ScanLine size={15} /><span><b>Source Trace</b><small>Geometry mapped</small></span></div><div className="floating-chip chip-two"><ShieldCheck size={15} /><span><b>98.4% confidence</b><small>Ready to export</small></span></div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+      </section>
+      <section className="logo-strip"><span>DOCUMENT INTELLIGENCE FOR</span><div><b>Finance</b><b>Operations</b><b>Legal</b><b>Public Sector</b><b>Education</b></div></section>
+      <section className="section" id="capabilities"><div className="section-heading"><span className="eyebrow">EXTRACTION CAPABILITIES</span><h2>Every document becomes useful data.</h2><p>A complete review experience around the core document-analysis features supported by Amazon Textract.</p></div><div className="capability-grid">{capabilities.map(({ icon: Icon, title, copy }, index) => <article className="capability-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><span><Icon size={20} /></span><h3>{title}</h3><p>{copy}</p><i><ArrowRight size={15} /></i></article>)}</div></section>
+      <section className="section workflow-section" id="workflow"><div className="section-heading"><span className="eyebrow">FROM FILE TO FACT</span><h2>A workflow your team can trust.</h2><p>Confidence stays visible at every step, so automation and human judgment work together.</p></div><div className="workflow-track">{workflow.map((item, index) => <div className="workflow-step" key={item}><span>{String(index + 1).padStart(2, "0")}</span><div className="workflow-icon">{index === 0 ? <UploadCloud /> : index === 1 ? <Zap /> : index === 2 ? <Braces /> : index === 3 ? <FileCheck2 /> : <Database />}</div><h3>{item}</h3><p>{["Add a PDF or image", "Select the right analysis", "Structure fields and tables", "Resolve uncertain values", "Download JSON, CSV, or TXT"][index]}</p></div>)}</div></section>
+      <section className="section architecture" id="security"><div className="architecture-copy"><span className="eyebrow">AWS-READY ARCHITECTURE</span><h2>Designed for a production cloud pipeline.</h2><p>This frontend models the complete processing lifecycle without sending files or requiring credentials. Backend services can replace the demo adapter later without redesigning the experience.</p><div className="security-points"><span><LockKeyhole size={16} /> No AWS keys in the browser</span><span><ShieldCheck size={16} /> Privacy-first demo mode</span></div><Link href="/dashboard" className="text-link">Explore the workspace <ArrowRight size={16} /></Link></div><div className="architecture-card"><div className="arch-head"><span><Cloud size={18} /> Future AWS workflow</span><em>INTEGRATION READY</em></div><div className="arch-flow">{[[Blocks,"Frontend","Ready"],[Box,"Amazon S3","Demo"],[Zap,"AWS Lambda","Demo"],[ScanLine,"Amazon Textract","Demo"],[Database,"DynamoDB","Demo"]].map(([Icon,label,status], index) => <div className="arch-node" key={String(label)}><span>{typeof Icon !== "string" && <Icon size={19} />}</span><div><strong>{String(label)}</strong><small>{String(status)}</small></div>{index < 4 && <ArrowRight className="arch-arrow" size={15} />}</div>)}</div><div className="architecture-note"><ShieldCheck size={16} /><span><strong>Demo frontend — AWS integration ready</strong><small>All current processing is simulated locally.</small></span></div></div></section>
+    </main>
+    <footer className="landing-footer"><Brand compact /><p>Frontend Demo Mode · Built for an AWS-ready document intelligence workflow.</p><Link href="/dashboard">Open workspace <ArrowRight size={14} /></Link></footer>
+  </div>;
 }
