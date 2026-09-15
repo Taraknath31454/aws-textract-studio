@@ -1,35 +1,66 @@
+import type { Metadata } from "next";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { ArrowRight, Blocks, Box, Braces, Check, Cloud, Database, FileCheck2, FileSearch, FileText, FormInput, LayoutDashboard, LockKeyhole, ScanLine, ShieldCheck, Signature, Sparkles, Table2, UploadCloud, Workflow, Zap } from "lucide-react";
-import { Brand } from "@/components/ui/brand";
+import { FeatureCards } from "@/components/home/feature-cards";
+import { HeroSection } from "@/components/home/hero-section";
+import { Navbar } from "@/components/home/navbar";
+import { StatsCard } from "@/components/home/stats-card";
 
-const capabilities = [
-  { icon: FileText, title: "Text Detection", copy: "Printed and handwritten words with position and confidence." },
-  { icon: FormInput, title: "Forms", copy: "Key-value relationships preserved as structured fields." },
-  { icon: Table2, title: "Tables", copy: "Rows, columns, merged cells, and headers reconstructed." },
-  { icon: FileSearch, title: "Queries", copy: "Target precise answers with natural-language questions." },
-  { icon: Signature, title: "Signatures", copy: "Locate the presence of signatures for human review." },
-  { icon: LayoutDashboard, title: "Layout Analysis", copy: "Understand titles, paragraphs, lists, and reading order." },
-];
-const workflow = ["Upload", "Analyze", "Extract", "Review", "Export"];
+export const metadata: Metadata = {
+  title: "AI Document Intelligence",
+  description:
+    "Turn invoices, forms, IDs, and contracts into structured, review-ready data with AWS Textract Studio.",
+};
 
 export default function Home() {
-  return <div className="landing">
-    <nav className="landing-nav"><Brand /><div className="landing-links"><a href="#product">Product</a><a href="#workflow">Workflow</a><a href="#capabilities">Capabilities</a><a href="#security">Security</a></div><div className="landing-auth-actions"><Link className="sign-in-link" href="/login">Sign In</Link><Link className="btn btn-primary" href="/signup">Create Account <ArrowRight size={16} /></Link></div></nav>
-    <main>
-      <section className="hero" id="product">
-        <div className="hero-grid" /><div className="hero-orb hero-orb-one" /><div className="hero-orb hero-orb-two" />
-        <div className="hero-copy reveal"><span className="powered-badge"><span className="aws-smile">aws</span> POWERED BY AMAZON TEXTRACT</span><h1>Turn documents into <span>structured intelligence.</span></h1><p>Upload documents, extract text and structured information, validate uncertain results, and transform files into machine-readable data.</p><div className="hero-actions"><Link className="btn btn-primary btn-lg" href="/upload">Start Processing <ArrowRight size={18} /></Link><a className="btn btn-secondary btn-lg" href="#workflow"><Workflow size={18} /> Explore Workflow</a></div><div className="hero-trust"><span><Check size={14} /> Browser-only demo</span><span><Check size={14} /> AWS integration ready</span><span><Check size={14} /> No credentials required</span></div></div>
-        <div className="hero-visual reveal delay-1" aria-label="Animated document processing preview">
-          <div className="preview-toolbar"><div><i /><i /><i /></div><span>invoice_1042.pdf</span><em>ANALYZING</em></div>
-          <div className="preview-body"><div className="mock-document"><div className="doc-logo"><span>ACME</span><small>SYSTEMS</small></div><b>INVOICE</b><div className="doc-meta"><i /><i /><i /></div><div className="doc-table"><i /><i /><i /><i /></div><div className="doc-total"><i /><strong>₹42,580.00</strong></div><span className="scan-beam" /><span className="trace-box trace-one" /><span className="trace-box trace-two" /></div><div className="preview-results"><div className="results-head"><Sparkles size={14} /> Extracted fields <span>7</span></div>{[["Invoice no.","INV-2026-1042","98.7"],["Date","02 Sep 2026","97.9"],["Vendor","Acme Systems","96.4"],["Total","₹42,580.00","99.1"]].map(([key,value,score]) => <div className="preview-field" key={key}><span>{key}</span><strong>{value}</strong><em>{score}%</em></div>)}<div className="processing-line"><span /><small>Mapping source geometry…</small></div></div></div>
-          <div className="floating-chip chip-one"><ScanLine size={15} /><span><b>Source Trace</b><small>Geometry mapped</small></span></div><div className="floating-chip chip-two"><ShieldCheck size={15} /><span><b>98.4% confidence</b><small>Ready to export</small></span></div>
+  return (
+    <div className="home-page">
+      <div className="home-grid" aria-hidden="true" />
+      <div className="home-ambient home-ambient-one" aria-hidden="true" />
+      <div className="home-ambient home-ambient-two" aria-hidden="true" />
+
+      <Navbar />
+
+      <main>
+        <HeroSection />
+
+        <section className="home-showcase" id="features" aria-labelledby="features-title">
+          <div className="home-section-heading">
+            <span>BUILT FOR REAL DOCUMENTS</span>
+            <div>
+              <h2 id="features-title">Document intelligence, without the complexity.</h2>
+              <p>
+                Move from an unstructured file to useful, traceable data in one focused workspace.
+              </p>
+            </div>
+          </div>
+          <FeatureCards />
+          <StatsCard />
+        </section>
+
+        <section className="home-final-cta" id="pricing" aria-labelledby="home-cta-title">
+          <div>
+            <span className="home-kicker">FRONTEND DEMO · AWS-READY</span>
+            <h2 id="home-cta-title">See your documents differently.</h2>
+            <p>
+              Explore the complete simulated workflow now. Connect your AWS services when you are ready.
+            </p>
+          </div>
+          <Link href="/upload" className="home-button home-button-primary">
+            Open the studio <ArrowRight size={17} aria-hidden="true" />
+          </Link>
+        </section>
+
+        <div className="home-scroll-prompt" aria-hidden="true">
+          <span />
+          Scroll to explore
         </div>
-      </section>
-      <section className="logo-strip"><span>DOCUMENT INTELLIGENCE FOR</span><div><b>Finance</b><b>Operations</b><b>Legal</b><b>Public Sector</b><b>Education</b></div></section>
-      <section className="section" id="capabilities"><div className="section-heading"><span className="eyebrow">EXTRACTION CAPABILITIES</span><h2>Every document becomes useful data.</h2><p>A complete review experience around the core document-analysis features supported by Amazon Textract.</p></div><div className="capability-grid">{capabilities.map(({ icon: Icon, title, copy }, index) => <article className="capability-card reveal" style={{ animationDelay: `${index * 70}ms` }} key={title}><span><Icon size={20} /></span><h3>{title}</h3><p>{copy}</p><i><ArrowRight size={15} /></i></article>)}</div></section>
-      <section className="section workflow-section" id="workflow"><div className="section-heading"><span className="eyebrow">FROM FILE TO FACT</span><h2>A workflow your team can trust.</h2><p>Confidence stays visible at every step, so automation and human judgment work together.</p></div><div className="workflow-track">{workflow.map((item, index) => <div className="workflow-step" key={item}><span>{String(index + 1).padStart(2, "0")}</span><div className="workflow-icon">{index === 0 ? <UploadCloud /> : index === 1 ? <Zap /> : index === 2 ? <Braces /> : index === 3 ? <FileCheck2 /> : <Database />}</div><h3>{item}</h3><p>{["Add a PDF or image", "Select the right analysis", "Structure fields and tables", "Resolve uncertain values", "Download JSON, CSV, or TXT"][index]}</p></div>)}</div></section>
-      <section className="section architecture" id="security"><div className="architecture-copy"><span className="eyebrow">AWS-READY ARCHITECTURE</span><h2>Designed for a production cloud pipeline.</h2><p>This frontend models the complete processing lifecycle without sending files or requiring credentials. Backend services can replace the demo adapter later without redesigning the experience.</p><div className="security-points"><span><LockKeyhole size={16} /> No AWS keys in the browser</span><span><ShieldCheck size={16} /> Privacy-first demo mode</span></div><Link href="/dashboard" className="text-link">Explore the workspace <ArrowRight size={16} /></Link></div><div className="architecture-card"><div className="arch-head"><span><Cloud size={18} /> Future AWS workflow</span><em>INTEGRATION READY</em></div><div className="arch-flow">{[[Blocks,"Frontend","Ready"],[Box,"Amazon S3","Demo"],[Zap,"AWS Lambda","Demo"],[ScanLine,"Amazon Textract","Demo"],[Database,"DynamoDB","Demo"]].map(([Icon,label,status], index) => <div className="arch-node" key={String(label)}><span>{typeof Icon !== "string" && <Icon size={19} />}</span><div><strong>{String(label)}</strong><small>{String(status)}</small></div>{index < 4 && <ArrowRight className="arch-arrow" size={15} />}</div>)}</div><div className="architecture-note"><ShieldCheck size={16} /><span><strong>Demo frontend — AWS integration ready</strong><small>All current processing is simulated locally.</small></span></div></div></section>
-    </main>
-    <footer className="landing-footer"><Brand compact /><p>Frontend Demo Mode · Built for an AWS-ready document intelligence workflow.</p><Link href="/dashboard">Open workspace <ArrowRight size={14} /></Link></footer>
-  </div>;
+      </main>
+
+      <footer className="home-footer">
+        <p>© 2026 AWS Textract Studio</p>
+        <p>Frontend demo · Processing and extraction are simulated locally.</p>
+      </footer>
+    </div>
+  );
 }
