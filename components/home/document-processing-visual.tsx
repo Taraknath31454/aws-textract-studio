@@ -85,6 +85,8 @@ export function DocumentProcessingVisual() {
           <path className="processing-path processing-path-muted" d="M338 92 C338 123 322 138 310 158" />
           <path className="processing-path processing-path-live" d="M426 259 C470 258 471 214 511 213" />
           <path className="processing-path processing-path-live path-delay" d="M430 284 C475 288 478 335 514 336" />
+          <motion.circle r="2.5" fill="#72e4ff" animate={reduceMotion ? undefined : { cx: [426, 470, 511], cy: [259, 245, 213], opacity: [0, 1, 0] }} transition={{ duration: 2.1, repeat: Infinity, ease: "linear" }} />
+          <motion.circle r="2.2" fill="#8f78ff" animate={reduceMotion ? undefined : { cx: [430, 476, 514], cy: [284, 307, 336], opacity: [0, 1, 0] }} transition={{ duration: 2.35, repeat: Infinity, ease: "linear", delay: .7 }} />
         </svg>
 
         <motion.article
@@ -112,6 +114,9 @@ export function DocumentProcessingVisual() {
             <div className="home-scan-beam" aria-hidden="true"><i /></div>
             <span className="invoice-corner corner-one" aria-hidden="true" />
             <span className="invoice-corner corner-two" aria-hidden="true" />
+            <span className="scan-detection marker-vendor" aria-hidden="true">VENDOR_DETECTED</span>
+            <span className="scan-detection marker-id" aria-hidden="true">INVOICE_ID</span>
+            <span className="scan-detection marker-total" aria-hidden="true">TOTAL</span>
           </div>
         </motion.article>
 
@@ -142,6 +147,7 @@ export function DocumentProcessingVisual() {
         </motion.aside>
 
         <div className="home-pedestal" aria-hidden="true"><span /></div>
+        <div className="scene-system-status" aria-hidden="true"><i /> SYSTEM_STATUS: ONLINE</div>
         <div className="scene-caption">
           <span>From Documents to Possibilities</span>
           <strong>SCAN <i>›</i> EXTRACT <i>›</i> STRUCTURE <i>›</i> EMPOWER</strong>
