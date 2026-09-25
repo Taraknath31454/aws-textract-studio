@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowRight, CirclePlay, CloudCog, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CirclePlay, Focus, GitCompareArrows, ShieldCheck, Sparkles } from "lucide-react";
 import { DocumentProcessingVisual } from "./document-processing-visual";
 
 const trustItems = [
-  [CloudCog, "Powered by AWS"],
-  [ShieldCheck, "Secure & Scalable"],
-  [Sparkles, "Built for Real-World Use"],
+  [Focus, "Source-linked results"],
+  [GitCompareArrows, "Human review workflow"],
+  [ShieldCheck, "Local demo mode"],
 ] as const;
 
 export function HeroSection() {
@@ -24,13 +24,13 @@ export function HeroSection() {
         transition={transition}
       >
         <span className="home-kicker">
-          <Sparkles size={13} aria-hidden="true" /> AI-Powered Document Intelligence
+          <Sparkles size={13} aria-hidden="true" /> DOCUMENT INTELLIGENCE WORKSPACE
         </span>
         <h1>
-          Turn Documents into <span>Actionable Data</span>
+          Turn documents into <span>structured data.</span>
         </h1>
         <p>
-          Upload invoices, forms, IDs, or contracts and transform their text, tables, and key information into clean structured data with an Amazon Textract-ready workflow.
+          Upload invoices, forms, receipts, or scanned documents. Inspect extracted fields, trace every value to its source, and review uncertain results in one focused workspace.
         </p>
 
         <div className="home-hero-actions">

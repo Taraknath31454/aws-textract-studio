@@ -7,9 +7,11 @@ import { Box, Check, CheckCircle2, ChevronRight, Circle, CloudUpload, FileText, 
 import { Card, Collapsible } from "@/components/ui/common";
 import { PipelineIndicator } from "@/components/ui/pipeline-indicator";
 import { DemoDisclaimer, useApp } from "@/lib/context/app-context";
+import { useDocumentProcessing } from "@/hooks/use-document-processing";
+import { useDocumentUpload } from "@/hooks/use-document-upload";
+import { useDocuments } from "@/hooks/use-documents";
 import { DOCUMENT_RULES, PROCESSING_MODES } from "@/lib/constants";
-import { documentProcessingService } from "@/lib/services/document-processing";
-import type { ExtractionMode, TextractQuery } from "@/lib/types";
+import type { DocumentStatus, ExtractionMode, ProcessingStage, TextractQuery } from "@/lib/types";
 import { cn } from "@/lib/utils/format";
 
 const stages = [
@@ -18,31 +20,38 @@ const stages = [
 const sampleQueries: TextractQuery[] = [{ id: "q1", question: "What is the invoice number?", alias: "INVOICE_NUMBER", pages: "1" }];
 
 export function UploadWorkspace() {
-  const router = useRouter(); const inputRef = useRef<HTMLInputElement>(null); const { toast, addDocument } = useApp();
-  const [file, setFile] = useState<File | null>(null); const [preview, setPreview] = useState<string | null>(null); const [mode, setMode] = useState<ExtractionMode>("Automatic"); const [profile, setProfile] = useState("General Document"); const [queries, setQueries] = useState<TextractQuery[]>(sampleQueries); const [threshold, setThreshold] = useState(85); const [autoReview, setAutoReview] = useState(true); const [signatures, setSignatures] = useState(true); const [layout, setLayout] = useState(true); const [preserveRaw, setPreserveRaw] = useState(false); const [privacy, setPrivacy] = useState(false); const [dragging, setDragging] = useState(false); const [error, setError] = useState(""); const [processing, setProcessing] = useState(false); const [progress, setProgress] = useState(0);
+  const router = useRouter(); const inputRef = useRef<HTMLInputElement>(null); const { toast } = useApp(); const { addDocument } = useDocuments();
+  const { file, previewUrl: preview, error, selectFile: selectUploadFile, clearFile, setError } = useDocumentUpload();
+  const processing = useDocumentProcessing();
+  const [mode, setMode] = useState<ExtractionMode>("Automatic"); const [profile, setProfile] = useState("General Document"); const [queries, setQueries] = useState<TextractQuery[]>(sampleQueries); const [threshold, setThreshold] = useState(85); const [autoReview, setAutoReview] = useState(true); const [signatures, setSignatures] = useState(true); const [layout, setLayout] = useState(true); const [preserveRaw, setPreserveRaw] = useState(false); const [privacy, setPrivacy] = useState(false); const [dragging, setDragging] = useState(false);
 
   const selectFile = (selected?: File) => {
-    if (!selected) return; setError("");
-    const extension = `.${selected.name.split(".").pop()?.toLowerCase()}`;
-    if (!DOCUMENT_RULES.acceptedExtensions.includes(extension as never)) { setError(`Unsupported file. Choose ${DOCUMENT_RULES.formatsLabel}.`); return; }
-    if (selected.size > DOCUMENT_RULES.maxDemoFileSizeMb * 1024 * 1024) { setError(`File is larger than the ${DOCUMENT_RULES.maxDemoFileSizeMb} MB demo limit.`); return; }
-    if (preview) URL.revokeObjectURL(preview); setFile(selected); setPreview(selected.type.startsWith("image/") ? URL.createObjectURL(selected) : null); toast("Upload added", `${selected.name} is ready for preflight.`);
+    if (selectUploadFile(selected) && selected) toast("Upload added", `${selected.name} is ready for preflight.`);
   };
   const addQuery = () => setQueries((items) => [...items, { id: `q-${Date.now()}`, question: "", alias: "", pages: "*" }]);
   const updateQuery = (id: string, key: keyof TextractQuery, value: string) => setQueries((items) => items.map((item) => item.id === id ? { ...item, [key]: value } : item));
   const runProcessing = async (demo = false) => {
     if (!file && !demo) { setError("Choose a document or try the demo invoice first."); return; }
-    setProcessing(true); setProgress(2); toast("Processing started", "Running the local AWS workflow simulation.");
-    const id = await documentProcessingService.process({ file: file ?? undefined, demoDocumentId: demo ? "demo-001" : undefined, mode, profile, queries }, setProgress);
-    if (file) addDocument({ id, name: file.name, type: profile.includes("Invoice") ? "Invoice" : "Business Document", pages: file.type === "application/pdf" ? 2 : 1, mode, confidence: 94.8, status: "Needs Review", uploadedAt: "Just now", size: `${(file.size / 1024 / 1024).toFixed(1)} MB`, tags: ["local"] });
-    toast("Processing finished", "The demo result is ready to review."); router.push(`/documents/${id}`);
+    setError(null); toast("Processing started", "Running the local AWS workflow simulation.");
+    const result = await processing.start({ file: file ?? undefined, demoDocumentId: demo ? "demo-001" : undefined, mode, profile, queries });
+    if (!result) return;
+    addDocument(result.document);
+    toast("Processing finished", "The demo result is ready to review."); router.push(`/documents/${result.document.id}`);
   };
 
-  if (processing) return <ProcessingPipeline progress={progress} />;
+  const retryProcessing = async () => {
+    const result = await processing.retry();
+    if (!result) return;
+    addDocument(result.document);
+    toast("Processing finished", "The retry completed and the demo result is ready.");
+    router.push(`/documents/${result.document.id}`);
+  };
+
+  if (processing.status !== "IDLE") return <ProcessingPipeline status={processing.status} stage={processing.stage} progress={processing.progress} message={processing.message} onRetry={() => void retryProcessing()} onReset={processing.reset} />;
   return <div className="upload-layout">
     <div className="upload-main">
       <Card className="upload-card"><div className="section-title"><span className="number-badge">01</span><div><h2>Add a document</h2><p>Your file stays in this browser during the frontend demo.</p></div></div>
-        {!file ? <div className={cn("dropzone", dragging && "dragging", error && "has-error")} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); selectFile(event.dataTransfer.files[0]); }}><input ref={inputRef} type="file" accept={DOCUMENT_RULES.acceptedExtensions.join(",")} onChange={(event) => selectFile(event.target.files?.[0])} /><span className="drop-icon"><CloudUpload size={29} /></span><h3>Drop your document here</h3><p>or <button onClick={() => inputRef.current?.click()}>browse files</button> from your device</p><div className="format-chips">{["PDF","PNG","JPG","TIFF"].map((value) => <span key={value}>{value}</span>)}</div><small>Maximum {DOCUMENT_RULES.maxDemoFileSizeMb} MB in demo mode · Files never leave your browser</small></div> : <div className="selected-file"><div className="file-preview">{preview ? <img src={preview} alt="Selected document preview" /> : <FileText size={36} />}</div><div className="file-info"><span className="status status-completed"><i /> Ready</span><h3>{file.name}</h3><p>{(file.size / 1024 / 1024).toFixed(2)} MB · {file.name.split(".").pop()?.toUpperCase()} · {file.type === "application/pdf" ? "Page count available after backend analysis" : "1 image"}</p></div><button className="icon-btn" onClick={() => { setFile(null); setPreview(null); }} aria-label="Remove selected file"><Trash2 size={18} /></button></div>}
+        {!file ? <div className={cn("dropzone", dragging && "dragging", error && "has-error")} onDragOver={(event) => { event.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={(event) => { event.preventDefault(); setDragging(false); selectFile(event.dataTransfer.files[0]); }}><input ref={inputRef} type="file" accept={DOCUMENT_RULES.acceptedExtensions.join(",")} onChange={(event) => selectFile(event.target.files?.[0])} /><span className="drop-icon"><CloudUpload size={29} /></span><h3>Drop your document here</h3><p>or <button onClick={() => inputRef.current?.click()}>browse files</button> from your device</p><div className="format-chips">{["PDF","PNG","JPG","TIFF"].map((value) => <span key={value}>{value}</span>)}</div><small>Maximum {DOCUMENT_RULES.maxDemoFileSizeMb} MB in demo mode · Files never leave your browser</small></div> : <div className="selected-file"><div className="file-preview">{preview ? <img src={preview} alt="Selected document preview" /> : <FileText size={36} />}</div><div className="file-info"><span className="status status-completed"><i /> Ready</span><h3>{file.name}</h3><p>{(file.size / 1024 / 1024).toFixed(2)} MB · {file.name.split(".").pop()?.toUpperCase()} · {file.type === "application/pdf" ? "Page count available after backend analysis" : "1 image"}</p></div><button className="icon-btn" onClick={clearFile} aria-label="Remove selected file"><Trash2 size={18} /></button></div>}
         {error && <div className="inline-error"><Info size={16} />{error}</div>}
         <button className="demo-document-link" onClick={() => void runProcessing(true)}><span><WandSparkles size={18} /></span><div><strong>Try Demo Document</strong><small>Process a realistic invoice instantly — no upload needed</small></div><ChevronRight size={18} /></button>
       </Card>
@@ -65,7 +74,9 @@ export function UploadWorkspace() {
   </div>;
 }
 
-function ProcessingPipeline({ progress }: { progress: number }) {
-  const activeIndex = progress >= 84 ? 4 : progress >= 68 ? 3 : progress >= 48 ? 2 : progress >= 12 ? 1 : 0;
-  return <div className="processing-experience reveal"><div className="processing-heading"><span className="processing-orbit"><ScanLine size={28} /></span><span className="eyebrow">DOCUMENT PROCESSING</span><h1>Transforming your document</h1><p>Simulating the production AWS document-intelligence pipeline.</p></div><PipelineIndicator activeIndex={activeIndex} complete={progress >= 100} /><Card className="pipeline-card"><div className="pipeline-progress"><span style={{ width: `${progress}%` }} /></div><div className="pipeline-percent"><strong>{progress}%</strong><small>Do not close this window</small></div><div className="pipeline-stages">{stages.map((stage, index) => { const complete = progress >= stage.at; const active = !complete && (index === 0 || progress >= stages[index - 1].at); const Icon = stage.icon; return <div className={cn("pipeline-stage", complete && "complete", active && "active")} key={stage.label}><span>{complete ? <Check size={18} /> : active ? <LoaderCircle className="spin" size={18} /> : <Icon size={18} />}</span><div><strong>{stage.label}</strong><small>{stage.sub}</small></div><em>{complete ? "Complete" : active ? "Processing" : "Waiting"}</em></div>; })}</div></Card><DemoDisclaimer /><div className="processing-security"><ShieldCheck size={16} /> Secure architecture concept · local simulation · no external transfer</div></div>;
+function ProcessingPipeline({ status, stage, progress, message, onRetry, onReset }: { status: DocumentStatus; stage?: ProcessingStage; progress: number; message: string; onRetry: () => void; onReset: () => void }) {
+  const activeIndex = status === "COMPLETED" ? 4 : status === "UPLOADING" ? 0 : stage === "SCANNING" || stage === "ANALYZING" ? 1 : stage === "EXTRACTING" ? 2 : stage === "VERIFYING" ? 3 : 0;
+  const detailedIndex = Math.max(0, stages.findIndex((item) => progress < item.at));
+  const failed = status === "FAILED";
+  return <div className="processing-experience reveal"><div className="processing-heading"><span className={cn("processing-orbit", failed && "failed")}><ScanLine size={28} /></span><span className="eyebrow">DOCUMENT PROCESSING</span><h1>{failed ? "Processing paused" : status === "COMPLETED" ? "Processing complete" : "Transforming your document"}</h1><p>{message}</p></div><PipelineIndicator activeIndex={activeIndex} complete={status === "COMPLETED"} /><div className={cn("processing-state-grid", stage === "SCANNING" && "is-scanning", failed && "is-failed")}><div className="processing-document" aria-hidden="true"><span className="processing-sheet"><i /><i /><i /><i /><i />{stage === "SCANNING" && <b className="processing-scan-beam" />}{(stage === "EXTRACTING" || stage === "VERIFYING") && <span className="processing-extract-markers"><b /><b /><b /></span>}</span><small>{stage ? stage.replaceAll("_", " ") : status}</small></div><Card className="pipeline-card"><div className="pipeline-progress"><span style={{ width: `${progress}%` }} /></div><div className="pipeline-percent"><strong>{progress}%</strong><small>{failed ? "Animation stopped" : "Do not close this window"}</small></div><div className="pipeline-stages">{stages.map((item, index) => { const complete = progress >= item.at; const active = !failed && !complete && (index === 0 || progress >= stages[index - 1].at); const failedHere = failed && detailedIndex === index; const Icon = item.icon; return <div className={cn("pipeline-stage", complete && "complete", active && "active", failedHere && "failed")} key={item.label}><span>{complete ? <Check size={18} /> : active ? <LoaderCircle className="spin" size={18} /> : <Icon size={18} />}</span><div><strong>{item.label}</strong><small>{item.sub}</small></div><em>{failedHere ? "Failed" : complete ? "Complete" : active ? "Processing" : "Waiting"}</em></div>; })}</div>{failed && <div className="processing-retry"><div><Info size={16} /><span><strong>Mock processing failed</strong><small>No file left this browser. Retry restarts the deterministic local pipeline.</small></span></div><div><button className="btn btn-primary" onClick={onRetry}>Retry Processing</button><button className="btn btn-secondary" onClick={onReset}>Back to upload</button></div></div>}</Card></div><DemoDisclaimer /><div className="processing-security"><ShieldCheck size={16} /> Secure architecture concept · local simulation · no external transfer</div></div>;
 }

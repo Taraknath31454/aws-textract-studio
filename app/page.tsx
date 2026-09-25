@@ -38,12 +38,12 @@ export default function Home() {
           <StatsCard />
         </section>
 
-        <section className="home-final-cta" id="pricing" aria-labelledby="home-cta-title">
+        <section className="home-final-cta" id="use-cases" aria-labelledby="home-cta-title">
           <div>
-            <span className="home-kicker">FRONTEND DEMO · AWS-READY</span>
-            <h2 id="home-cta-title">See your documents differently.</h2>
+            <span className="home-kicker">INVOICES · FORMS · RECEIPTS · CONTRACTS</span>
+            <h2 id="home-cta-title">Inspect the workflow with a complete example.</h2>
             <p>
-              Explore the complete simulated workflow now. Connect your AWS services when you are ready.
+              Open the local processing simulation, then review its structured output and source trace.
             </p>
           </div>
           <Link href="/upload" className="home-button home-button-primary">

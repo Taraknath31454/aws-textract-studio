@@ -1,19 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Menu, MoonStar, ScanText, X } from "lucide-react";
+import { ArrowUpRight, Menu, ScanText, X } from "lucide-react";
 
 const navItems = [
   ["Home", "#home"],
   ["Features", "#features"],
   ["How It Works", "#how-it-works"],
   ["Use Cases", "#use-cases"],
-  ["Pricing", "#pricing"],
 ] as const;
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("#home");
+
+  useEffect(() => {
+    const sections = navItems.flatMap(([, href]) => {
+      const element = document.querySelector(href);
+      return element ? [element] : [];
+    });
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (visible?.target.id) setActive(`#${visible.target.id}`);
+    }, { rootMargin: "-25% 0px -60%", threshold: [0.05, 0.35, 0.7] });
+    sections.forEach((section) => observer.observe(section));
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <header className="home-navbar-wrap">
@@ -40,12 +53,13 @@ export function Navbar() {
 
         <div className={`home-nav-drawer${open ? " is-open" : ""}`} id="home-navigation-links">
           <div className="home-nav-links">
-            {navItems.map(([label, href], index) => (
+            {navItems.map(([label, href]) => (
               <a
-                className={index === 0 ? "is-active" : undefined}
+                className={active === href ? "is-active" : undefined}
                 href={href}
                 key={label}
-                onClick={() => setOpen(false)}
+                onClick={() => { setActive(href); setOpen(false); }}
+                aria-current={active === href ? "location" : undefined}
               >
                 {label}
               </a>
@@ -53,9 +67,6 @@ export function Navbar() {
           </div>
 
           <div className="home-nav-actions">
-            <span className="home-theme-orb" title="Dark interface" aria-hidden="true">
-              <MoonStar size={15} aria-hidden="true" />
-            </span>
             <Link className="home-sign-in" href="/login" onClick={() => setOpen(false)}>
               Sign In
             </Link>

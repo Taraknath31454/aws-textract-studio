@@ -1,5 +1,10 @@
-export function ActivityChart() {
-  const bars = [36, 54, 45, 73, 65, 88, 78, 98, 82, 66, 72, 93, 81, 100];
-  return <div className="activity-chart"><div className="chart-y"><span>120</span><span>80</span><span>40</span><span>0</span></div><div className="chart-area"><svg viewBox="0 0 700 220" preserveAspectRatio="none" aria-label="Documents processed over the last 14 days"><defs><linearGradient id="area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#36bffa" stopOpacity=".28"/><stop offset="1" stopColor="#36bffa" stopOpacity="0"/></linearGradient></defs><path className="area-path" d="M0 181 L54 151 L108 166 L162 113 L216 128 L270 78 L324 96 L378 40 L432 72 L486 111 L540 100 L594 51 L648 83 L700 29 L700 220 L0 220Z" fill="url(#area)"/><path className="line-path" d="M0 181 L54 151 L108 166 L162 113 L216 128 L270 78 L324 96 L378 40 L432 72 L486 111 L540 100 L594 51 L648 83 L700 29" fill="none" stroke="#36bffa" strokeWidth="3" vectorEffect="non-scaling-stroke"/></svg><div className="chart-bars">{bars.map((bar, index) => <i style={{ height: `${bar}%` }} key={index} />)}</div><div className="chart-x"><span>20 Aug</span><span>24 Aug</span><span>28 Aug</span><span>02 Sep</span></div></div></div>;
+export function ActivityChart({ values }: { values: number[] }) {
+  const points = values.length ? values : [0];
+  const width = 700;
+  const height = 200;
+  const xStep = points.length > 1 ? width / (points.length - 1) : width;
+  const toY = (value: number) => height - Math.max(0, Math.min(100, value)) / 100 * 170;
+  const path = points.map((value, index) => `${index ? "L" : "M"}${(index * xStep).toFixed(1)} ${toY(value).toFixed(1)}`).join(" ");
+  const area = `${path} L${width} ${height} L0 ${height}Z`;
+  return <div className="activity-chart"><div className="chart-y"><span>100%</span><span>75%</span><span>50%</span><span>0%</span></div><div className="chart-area"><svg viewBox={`0 0 ${width} 220`} preserveAspectRatio="none" role="img" aria-label="Confidence across recent completed documents"><defs><linearGradient id="confidence-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#38bdf8" stopOpacity=".2" /><stop offset="1" stopColor="#38bdf8" stopOpacity="0" /></linearGradient></defs><path className="area-path" d={area} fill="url(#confidence-area)" /><path className="line-path" d={path} fill="none" stroke="#38bdf8" strokeWidth="2" vectorEffect="non-scaling-stroke" />{points.map((value, index) => <circle key={index} cx={index * xStep} cy={toY(value)} r="3" fill="#0b0f16" stroke="#67d7ff" strokeWidth="2" vectorEffect="non-scaling-stroke" />)}</svg><div className="chart-x"><span>Older</span><span>Recent documents</span><span>Latest</span></div></div></div>;
 }
-

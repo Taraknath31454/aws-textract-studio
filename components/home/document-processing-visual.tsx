@@ -70,7 +70,7 @@ export function DocumentProcessingVisual() {
           transition={{ duration: 3.6, repeat: Infinity, ease: "easeInOut" }}
         >
           <span aria-hidden="true"><Cloud size={27} /></span>
-          <div><strong>Secure cloud</strong><small>Document received</small></div>
+          <div><strong>Document intake</strong><small>Local simulation</small></div>
           <i aria-hidden="true" />
         </motion.div>
 
@@ -147,10 +147,10 @@ export function DocumentProcessingVisual() {
         </motion.aside>
 
         <div className="home-pedestal" aria-hidden="true"><span /></div>
-        <div className="scene-system-status" aria-hidden="true"><i /> SYSTEM_STATUS: ONLINE</div>
+        <div className="scene-system-status" aria-hidden="true"><i /> PROCESSING_SIMULATION: ACTIVE</div>
         <div className="scene-caption">
-          <span>From Documents to Possibilities</span>
-          <strong>SCAN <i>›</i> EXTRACT <i>›</i> STRUCTURE <i>›</i> EMPOWER</strong>
+          <span>Traceable document processing</span>
+          <strong>SCAN <i>›</i> EXTRACT <i>›</i> VERIFY <i>›</i> REVIEW</strong>
         </div>
       </motion.div>
     </div>

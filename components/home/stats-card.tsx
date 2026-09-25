@@ -1,12 +1,12 @@
 "use client";
 
 import { motion, useReducedMotion } from "framer-motion";
-import { Asterisk, Gauge, ShieldCheck, Sparkles } from "lucide-react";
+import { FileCheck2, Focus, ShieldCheck, Sparkles } from "lucide-react";
 
 const metrics = [
-  ["10x", "Faster Processing"],
-  ["99%", "Accurate Extraction"],
-  ["∞", "Real-World Use Cases"],
+  ["PDF + image", "Supported input", FileCheck2],
+  ["Source-linked", "Review context", Focus],
+  ["Mock by default", "Safe demo mode", ShieldCheck],
 ] as const;
 
 export function StatsCard() {
@@ -21,16 +21,14 @@ export function StatsCard() {
       transition={{ duration: 0.36 }}
     >
       <div className="home-stats-intro">
-        <span><Sparkles size={15} aria-hidden="true" /> BUILT TO SCALE</span>
-        <h3>From first upload to production workflow.</h3>
-        <p><ShieldCheck size={14} aria-hidden="true" /> Trusted by builders, businesses and innovators.</p>
+        <span><Sparkles size={15} aria-hidden="true" /> DESIGNED FOR INSPECTION</span>
+        <h3>Clarity from intake to human review.</h3>
+        <p><ShieldCheck size={14} aria-hidden="true" /> Honest demo states. Replaceable service boundary.</p>
       </div>
       <div className="home-metrics">
-        {metrics.map(([value, label], index) => (
+        {metrics.map(([value, label, Icon]) => (
           <div key={label}>
-            <span aria-hidden="true">
-              {index === 0 ? <Gauge size={15} /> : index === 1 ? <Asterisk size={15} /> : <Sparkles size={15} />}
-            </span>
+            <span aria-hidden="true"><Icon size={15} /></span>
             <strong>{value}</strong>
             <small>{label}</small>
           </div>
