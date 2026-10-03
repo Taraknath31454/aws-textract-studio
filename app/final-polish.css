@@ -227,6 +227,17 @@ body { text-rendering: optimizeLegibility; }
 .auth-visual-panel, .auth-form-panel { min-height: calc(100vh - 64px); }
 .auth-header > div > span { color: var(--cyan-bright); background: var(--cyan-soft); border-color: rgba(65, 190, 230, .16); }
 .auth-input { border-radius: 6px; box-shadow: none; }
+.auth-title > p:last-child { font-size: 13px; }
+.auth-form > label:not(.auth-check) > span { font-size: 11px; }
+.auth-input input { font-size: 13px; }
+.auth-back-step, .login-options > a { font-size: 11px; }
+.auth-check > span { font-size: 10px !important; }
+.auth-check input:focus-visible + i { outline: 2px solid var(--cyan-bright); outline-offset: 2px; }
+.auth-switch { font-size: 12px; }
+.auth-honesty > span { font-size: 10px; }
+.auth-honesty strong { font-size: 11px; }
+.strength-head { font-size: 10px; }
+.strength-head strong, .password-rules > span, .field-error { font-size: 10px; }
 .auth-progress > span > i { border-radius: 5px; }
 .auth-success > span, .forgot-icon { border-radius: 8px; }
 .mascot-copy > span { border-radius: 5px; }
