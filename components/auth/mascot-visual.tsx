@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils/format";
+import { publicEnvironment } from "@/lib/config/environment";
 
 const eyePositions = [
   { left: 24.7, top: 40.0, character: "a" },
@@ -107,6 +108,6 @@ export function MascotVisual({ privacyLookAway = false, attentionTarget = null, 
     <div className="mascot-image-wrap"><Image src="/images/aws-mascot.png" alt="" width={1536} height={1024} priority className="mascot-image" />
       <div className="mascot-eye-layer">{eyePositions.map((position, index) => <span ref={(node) => { eyeRefs.current[index] = node; }} className={`mascot-eye mascot-eye-${position.character}`} style={{ left: `${position.left}%`, top: `${position.top}%` }} key={`${position.character}-${index}`}><span ref={(node) => { pupilRefs.current[index] = node; }} className="mascot-pupil" /></span>)}</div>
     </div>
-    {!compact && <><div className="mascot-copy"><span><Sparkles size={14} /> A smarter way to process documents</span><h2>Document intelligence,<br/>with a human touch.</h2><p>Configure, inspect, and validate extraction results in one secure AWS-ready workspace.</p></div><div className="mascot-trust"><span><ShieldCheck size={14} /> Frontend demo mode</span><span><LockKeyhole size={14} /> No passwords are stored</span></div></>}
+    {!compact && <><div className="mascot-copy"><span><Sparkles size={14} /> A smarter way to process documents</span><h2>Document intelligence,<br/>with a human touch.</h2><p>Configure, inspect, and validate extraction results in one secure AWS-ready workspace.</p></div><div className="mascot-trust"><span><ShieldCheck size={14} /> {publicEnvironment.dataMode === "api" ? "Live AWS processing" : "Frontend demo mode"}</span><span><LockKeyhole size={14} /> No passwords are stored</span></div></>}
   </div>;
 }

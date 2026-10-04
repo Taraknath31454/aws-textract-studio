@@ -95,6 +95,6 @@ export interface DocumentApi {
 
 const apiGatewayDocumentApi = createApiGatewayDocumentApi(publicEnvironment.apiBaseUrl);
 
-// Mock is the default. API mode intentionally remains an inactive readiness boundary.
+// Mock mode remains available; API mode uses the live API Gateway adapter.
 export const documentApi: DocumentApi = publicEnvironment.dataMode === "api" ? apiGatewayDocumentApi : mockDocumentApi;
 

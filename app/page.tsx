@@ -5,6 +5,7 @@ import { FeatureCards } from "@/components/home/feature-cards";
 import { HeroSection } from "@/components/home/hero-section";
 import { Navbar } from "@/components/home/navbar";
 import { StatsCard } from "@/components/home/stats-card";
+import { publicEnvironment } from "@/lib/config/environment";
 
 export const metadata: Metadata = {
   title: "AI Document Intelligence",
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
+  const isApiMode = publicEnvironment.dataMode === "api";
   return (
     <div className="home-page">
       <div className="home-grid" aria-hidden="true" />
@@ -43,7 +45,7 @@ export default function Home() {
             <span className="home-kicker">INVOICES · FORMS · RECEIPTS · CONTRACTS</span>
             <h2 id="home-cta-title">Inspect the workflow with a complete example.</h2>
             <p>
-              Open the local processing simulation, then review its structured output and source trace.
+              {isApiMode ? "Send a document through the AWS processing pipeline, then review its structured output and source trace." : "Open the local processing simulation, then review its structured output and source trace."}
             </p>
           </div>
           <Link href="/upload" className="home-button home-button-primary">
@@ -59,7 +61,7 @@ export default function Home() {
 
       <footer className="home-footer">
         <p>© 2026 AWS Textract Studio</p>
-        <p>Frontend demo · Processing and extraction are simulated locally.</p>
+        <p>{isApiMode ? "Connected to the live AWS document-processing API." : "Frontend demo · Processing and extraction are simulated locally."}</p>
       </footer>
     </div>
   );

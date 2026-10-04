@@ -1,8 +1,8 @@
 # Textract Studio
 
-Textract Studio is a production-style frontend demonstration of an intelligent document-processing workspace built around Amazon Textract concepts. It is designed for university evaluation and product demos while remaining usable without AWS credentials or backend infrastructure.
+Textract Studio is a document-processing workspace backed by Amazon Textract, with an optional local mock mode for development and demonstrations.
 
-> Current status: **Frontend Demo Mode**. Files are not sent to AWS or any third party, and all extraction results are realistic mock data.
+> Current configuration: **Live AWS API mode**. Uploads use presigned S3 URLs and document metadata/results are loaded through the configured API Gateway endpoint.
 
 ## Stack
 
@@ -11,7 +11,7 @@ Textract Studio is a production-style frontend demonstration of an intelligent d
 - TypeScript
 - Tailwind CSS 4 plus a custom responsive design system
 - Lucide React icons
-- Browser `localStorage` for demo preferences, profiles, review corrections, and document metadata
+- Browser `localStorage` for preferences, profiles, and review corrections; document metadata is stored locally only in mock mode
 
 ## Run locally
 
@@ -35,7 +35,7 @@ npm run build
 | --- | --- |
 | `/` | Product landing page and visual AWS workflow |
 | `/dashboard` | Document intelligence overview |
-| `/upload` | Upload, preflight, extraction configuration, and pipeline simulation |
+| `/upload` | Upload, preflight, extraction configuration, and AWS processing workflow |
 | `/documents` | Searchable document repository |
 | `/documents/[id]` | Split-screen result workspace |
 | `/review` | Confidence-Guided Review and audit trail |
@@ -53,7 +53,7 @@ npm run build
 - Confidence-Guided Review with approve, edit, flag, skip, and a machine-versus-human audit trail.
 - Upload preflight based only on local file metadata, with explicit limitations.
 - Extraction Profiles and Query Lab saved locally in the browser.
-- Interactive browser-only processing simulation across S3, Lambda, Textract, normalization, and review stages.
+- Live presigned-S3 upload and AWS processing workflow in API mode, with a browser-only simulator retained for mock mode.
 - Result views for text, fields, tables, queries, signatures, layout, and normalized JSON.
 - Local JSON, CSV, and TXT downloads without API endpoints.
 - Privacy Presentation Mode that masks sensitive-looking values in the interface. It is not PII detection.
@@ -64,11 +64,11 @@ Three demo document types are included: invoice, application form, and contract/
 
 ## Frontend architecture
 
-Typed models and mock data live under `lib/types` and `lib/mock`. UI code accesses processing through the `DocumentProcessingService` interface in `lib/services/document-processing.ts`. The current `DemoDocumentProcessingService` performs a short browser simulation. A future backend adapter can implement the same interface without redesigning the pages.
+Typed contracts and adapters live under `lib`. The active `DocumentApi` is selected by `NEXT_PUBLIC_DATA_MODE`: `api` uses API Gateway plus a direct presigned S3 PUT, while `mock` keeps the local simulator available.
 
-No uploaded file contents are stored in `localStorage`; only small demo settings and metadata are persisted.
+No uploaded file contents are stored in `localStorage`. In API mode, browser-stored document metadata cannot replace records returned by the AWS API.
 
-## Future AWS architecture
+## AWS architecture
 
 The intended production workflow is:
 
@@ -77,6 +77,4 @@ Frontend → backend/API → Amazon S3 → AWS Lambda → Amazon Textract
          → result normalization → DynamoDB → frontend review/export
 ```
 
-For large or multi-page asynchronous work, the architecture can use `StartDocumentAnalysis`, Amazon SNS/SQS and Lambda orchestration, then `GetDocumentAnalysis` before normalization and persistence. Invoice/receipt profiles can map to `AnalyzeExpense`.
-
-AWS credentials must never be exposed in the frontend. S3, Lambda, Textract, SNS/SQS, DynamoDB, Cognito, and API Gateway are intentionally not configured in this phase.
+AWS credentials are never exposed in the frontend. The browser receives only short-lived upload destinations from the API.

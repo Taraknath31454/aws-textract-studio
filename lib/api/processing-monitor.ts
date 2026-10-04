@@ -1,5 +1,6 @@
 import { ApiServiceError } from "@/lib/api/client";
 import type { DocumentApi, ProcessingStatusResult } from "@/lib/api/documents";
+import { publicEnvironment } from "@/lib/config/environment";
 
 export interface ProcessingMonitorOptions {
   signal?: AbortSignal;
@@ -28,11 +29,11 @@ function wait(milliseconds: number, signal?: AbortSignal) {
 }
 
 export async function monitorProcessing(api: DocumentApi, documentId: string, options: ProcessingMonitorOptions = {}) {
-  const { signal, intervalMs = 240, maxAttempts = 60, onStatus } = options;
+  const { signal, intervalMs = publicEnvironment.dataMode === "api" ? 2_500 : 240, maxAttempts = publicEnvironment.dataMode === "api" ? 120 : 60, onStatus } = options;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     const response = await api.getProcessingStatus(documentId, signal);
     onStatus?.(response.data);
-    if (response.data.status === "COMPLETED" || response.data.status === "FAILED") return response.data;
+    if (response.data.status === "FAILED" || (response.data.status === "COMPLETED" && response.data.resultAvailable)) return response.data;
     await wait(intervalMs, signal);
   }
   throw new ApiServiceError({ code: "PROCESSING_TIMEOUT", message: "Document processing did not finish within the monitoring window.", status: 408 });

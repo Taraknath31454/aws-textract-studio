@@ -4,11 +4,12 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, CirclePlay, Focus, GitCompareArrows, ShieldCheck, Sparkles } from "lucide-react";
 import { DocumentProcessingVisual } from "./document-processing-visual";
+import { publicEnvironment } from "@/lib/config/environment";
 
 const trustItems = [
   [Focus, "Source-linked results"],
   [GitCompareArrows, "Human review workflow"],
-  [ShieldCheck, "Local demo mode"],
+  [ShieldCheck, publicEnvironment.dataMode === "api" ? "Live AWS processing" : "Local demo mode"],
 ] as const;
 
 export function HeroSection() {

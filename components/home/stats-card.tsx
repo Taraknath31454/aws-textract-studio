@@ -2,11 +2,12 @@
 
 import { motion, useReducedMotion } from "framer-motion";
 import { FileCheck2, Focus, ShieldCheck, Sparkles } from "lucide-react";
+import { publicEnvironment } from "@/lib/config/environment";
 
 const metrics = [
   ["PDF + image", "Supported input", FileCheck2],
   ["Source-linked", "Review context", Focus],
-  ["Mock by default", "Safe demo mode", ShieldCheck],
+  [publicEnvironment.dataMode === "api" ? "AWS connected" : "Mock by default", publicEnvironment.dataMode === "api" ? "Live processing" : "Safe demo mode", ShieldCheck],
 ] as const;
 
 export function StatsCard() {
@@ -23,7 +24,7 @@ export function StatsCard() {
       <div className="home-stats-intro">
         <span><Sparkles size={15} aria-hidden="true" /> DESIGNED FOR INSPECTION</span>
         <h3>Clarity from intake to human review.</h3>
-        <p><ShieldCheck size={14} aria-hidden="true" /> Honest demo states. Replaceable service boundary.</p>
+        <p><ShieldCheck size={14} aria-hidden="true" /> {publicEnvironment.dataMode === "api" ? "Connected to the live AWS document pipeline." : "Honest demo states. Replaceable service boundary."}</p>
       </div>
       <div className="home-metrics">
         {metrics.map(([value, label, Icon]) => (

@@ -14,6 +14,7 @@
   --shadow:0 12px 38px rgba(0,0,0,.24);--shadow-lg:0 30px 80px rgba(0,0,0,.4);
 }
 .console-shell{position:relative;isolation:isolate;background:var(--bg)}
+.console-shell.api-mode .repository-table .row-actions .danger{display:none}
 .console-shell:before{content:"";position:fixed;z-index:-2;inset:0 0 0 var(--sidebar);pointer-events:none;opacity:.45;background-image:linear-gradient(rgba(55,194,226,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(55,194,226,.025) 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 74%)}
 .console-ambient{position:fixed;z-index:-1;top:64px;right:-100px;width:520px;height:420px;pointer-events:none;border-radius:50%;background:rgba(35,151,209,.055);filter:blur(110px);transition:background .4s ease}
 .console-context-upload .console-ambient{background:rgba(0,185,232,.075)}
@@ -32,7 +33,7 @@
 .nav-link.active{border-color:rgba(56,191,226,.1);background:linear-gradient(90deg,rgba(38,184,221,.11),rgba(75,76,184,.035));box-shadow:none}
 .nav-link.active:before{content:"";position:absolute;left:-9px;top:8px;bottom:8px;width:2px;border-radius:2px;background:var(--cyan-bright);box-shadow:var(--glow-cyan)}
 .nav-link.active .nav-arrow{color:var(--cyan-bright)}
-.demo-mode-card{position:relative;overflow:hidden;background:rgba(20,30,43,.62)}.demo-mode-card:after{content:"LOCAL_SIM";margin-left:auto;color:#506076;font:6px var(--technical-font);letter-spacing:.08em}
+.demo-mode-card{position:relative;overflow:hidden;background:rgba(20,30,43,.62)}.demo-mode-card:after{content:"LOCAL_SIM";margin-left:auto;color:#506076;font:6px var(--technical-font);letter-spacing:.08em}.demo-mode-card.live:after{content:"AWS_LIVE"}
 .topbar{gap:18px;border-bottom-color:rgba(116,136,168,.15);background:color-mix(in srgb,var(--bg) 82%,transparent);box-shadow:0 10px 36px rgba(0,0,0,.12);backdrop-filter:blur(20px) saturate(120%)}
 .topbar-context{min-width:132px;display:flex;align-items:center;gap:5px;font:8px var(--technical-font);white-space:nowrap}.topbar-context span{color:#526075}.topbar-context strong{color:#a7b7cc;font-weight:650}
 .topbar-search{max-width:430px;border-color:rgba(122,142,174,.15);background:rgba(17,20,29,.7)}.topbar-search:focus-within{border-color:rgba(66,212,244,.56);box-shadow:0 0 0 3px rgba(66,212,244,.06)}.topbar-search kbd{font-family:var(--technical-font)}

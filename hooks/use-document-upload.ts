@@ -25,7 +25,7 @@ export function useDocumentUpload() {
       return false;
     }
     if (selected.size > DOCUMENT_RULES.maxDemoFileSizeMb * 1024 * 1024) {
-      setError(`File is larger than the ${DOCUMENT_RULES.maxDemoFileSizeMb} MB demo limit.`);
+      setError(`File is larger than the ${DOCUMENT_RULES.maxDemoFileSizeMb} MB upload limit.`);
       return false;
     }
 
